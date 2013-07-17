@@ -37,10 +37,6 @@ var assertFileExists = function(infile) {
     return instr;
 };
 
-var getUrl = function(url) {
-    return url;
-};
-
 var cheerioHtmlFile = function(htmlfile) {
     return cheerio.load(fs.readFileSync(htmlfile));
 };
@@ -77,17 +73,17 @@ if (require.main === module) {
     program
         .option('-c, --checks <check_file>', 'Path to checks.json', clone(assertFileExists), CHECKSFILE_DEFAULT)
         .option('-f, --file <html_file>', 'Path to index.html', clone(assertFileExists), HTMLFILE_DEFAULT)
-        .option('-u, --url <url>', 'Url of the heroku app', clone(getUrl), undefined)
+        .option('-u, --url <url>', 'Url of the heroku app', clone(function(url) { return url; }))
         .parse(process.argv);
     
     if (program.url !== undefined) {
-		rest.get(program.url).on('complete', function(result, response) {
-			fs.writeFileSync('url.html', result);
-			getResults('url.html', program.checks);
-		});
+	rest.get(program.url).on('complete', function(result, response) {
+	    fs.writeFileSync('url.html', result);
+	    getResults('url.html', program.checks);
+	});
     } else {
-		getResults(program.file, program.checks);
-	}
+	getResults(program.file, program.checks);
+    }
 } else {
     exports.checkHtmlFile = checkHtmlFile;   
 }
